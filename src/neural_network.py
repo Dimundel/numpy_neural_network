@@ -1,12 +1,12 @@
 import numpy as np
 
 class Layer:
-    def __init__ (self, weights_size, input_size):
-        self.weights = np.zeros(shape=(weights_size, input_size))
-        self.bias = np.zeros(shape=weights_size)
+    def __init__ (self, weights, bias):
+        self.weights = weights
+        self.bias = bias
     
     def forward(self, input):
-        return np.matmul(self.weights, input) + self.bias
+        return np.matmul(input, self.weights) + self.bias
 
 class ReLU:
     def __init__(self):
@@ -14,3 +14,4 @@ class ReLU:
     
     def forward(self, input):
         return np.maximum(0, input)
+
