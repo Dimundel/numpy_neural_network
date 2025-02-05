@@ -15,3 +15,9 @@ class ReLU:
     def forward(self, input):
         return np.maximum(0, input)
 
+class Sigmoid:
+    def __init__(self, weights):
+        self.weights = weights
+
+    def forward(self, input):
+        return 1 / (1 + np.exp(-self.weights * input))
