@@ -24,3 +24,6 @@ class Sigmoid:
 
 def calculate_log_loss(y_true, y_prob):
     return -1*y_true*np.log(y_prob)-(1-y_true)*np.log(1-y_prob)
+
+def calculate_gradient(y_true, y_prob):
+    return (y_true - y_prob)/ y_prob / (1 - y_prob)
