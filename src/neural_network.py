@@ -21,3 +21,6 @@ class Sigmoid:
 
     def forward(self, input):
         return 1 / (1 + np.exp(-self.weights * input))
+
+def calculate_log_loss(y_true, y_prob):
+    return -1*y_true*np.log(y_prob)-(1-y_true)*np.log(1-y_prob)
