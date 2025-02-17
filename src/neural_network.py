@@ -17,6 +17,9 @@ class ReLU:
     
     def forward(self, input):
         return np.maximum(0, input)
+    
+    def back(self, forward_value, forward_gradient):
+        return (forward_value > 0).astype(int) * forward_gradient
 
 class Sigmoid:
     def __init__(self, weights):
