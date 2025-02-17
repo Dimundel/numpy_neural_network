@@ -25,14 +25,11 @@ class ReLU:
         return (forward_value > 0).astype(int) * forward_gradient
 
 class Sigmoid:
-    def __init__(self, weights):
-        self.weights = weights
-
     def forward(self, input):
-        return 1 / (1 + np.exp(-self.weights * input))
+        return 1 / (1 + np.exp(input))
 
-    def back(self, forward_value, forward_gradient):
-        return forward_value * (1 - forward_value) * forward_gradient
+    def back(self, input_value, forward_gradient):
+        return input_value * (1 - input_value) * forward_gradient
 
 def calculate_log_loss(y_true, y_prob):
     return -1*y_true*np.log(y_prob)-(1-y_true)*np.log(1-y_prob)
