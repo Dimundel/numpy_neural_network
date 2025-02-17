@@ -8,8 +8,11 @@ class Layer:
     def forward(self, input):
         return np.matmul(input, self.weights) + self.bias
     
-    def back(self, forward_value, forward_gradient):
+    def calculate_gradient(self, forward_value, forward_gradient):
         return np.matmul(forward_value.transpose(), forward_gradient)
+    
+    def back(self, forward_gradient):
+        return np.matmul(forward_gradient, self.weights.transpose())
 
 class ReLU:
     def __init__(self):
