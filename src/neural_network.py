@@ -13,6 +13,9 @@ class Layer:
     
     def back(self, forward_gradient):
         return np.matmul(forward_gradient, self.weights.transpose())
+    
+    def gradient_descent(self, gradient, learning_rate):
+        self.weights -= learning_rate*gradient
 
 class ReLU:
     def __init__(self):
