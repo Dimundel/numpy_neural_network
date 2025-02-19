@@ -93,4 +93,10 @@ def f(x, y):
 
 Z = np.array([f(x, y) for x, y in xy_pairs])
 
-# print(sigmoid.forward(np.array([[0], [1]])))
+plt.figure(figsize=(6, 5))
+plt.scatter(xy_pairs[:, 0], xy_pairs[:, 1], c=Z, cmap="coolwarm", s=10)
+plt.colorbar(label="Function Value (Probability)")
+plt.xlabel("X-axis")
+plt.ylabel("Y-axis")
+plt.title("2D Function Visualization")
+plt.show()
