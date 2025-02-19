@@ -40,7 +40,22 @@ def calculate_log_loss(y_true, y_prob):
 def calculate_gradient(y_true, y_prob):
     return (y_prob - y_true)/ (y_prob * (1 - y_prob))
 
-x = np.array([[2, 3], [-2, 1]])
+def generate_xor_data(num_samples):
+    X = np.random.rand(num_samples, 2)
+
+    # XOR operation for output
+    y = ((X[:, 0] >= 0.5) & (X[:, 1] <= 0.5)) | ((X[:, 0] <= 0.5) & (X[:, 1] >= 0.5)).astype(int)
+    y = y.reshape(-1, 1)
+
+    return X, y
+
+X, y = generate_xor_data(1000)
+
+print("First 5 samples of X:")
+print(X[:5])
+print("First 5 corresponding outputs (y):")
+print(y[:5])
+
 sigmoid = Sigmoid()
 W = np.array([[1], [-0.2]])
 layer = Layer(W, np.zeros(W.shape[1]))
