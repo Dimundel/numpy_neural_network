@@ -57,21 +57,40 @@ print("First 5 corresponding outputs (y):")
 print(y[:5])
 
 sigmoid = Sigmoid()
-W = np.array([[1], [-0.2]])
-layer = Layer(W, np.zeros(W.shape[1]))
-res1 = layer.forward(x)
-# print(res1)
-res2 = sigmoid.forward(res1)
-# print(res2)
-print("Loss before backpropagation:")
-print(calculate_log_loss(np.array([[1], [0]]), res2))
-first = sigmoid.back(res1, calculate_gradient(np.array([[1], [0]]), res2))
-# print(first)
-second = layer.calculate_gradient(x, first)
-# print(second)
-layer.weights -= 0.1*second
-# print(layer.weights)
-print("Loss after backpropagation:")
-print(calculate_log_loss(np.array([[1], [0]]), sigmoid.forward(layer.forward(x))))
+layer1 = Layer(np.array([[-0.2, 0.1, 0.5, 0.2, 0.3], [0.6, -0.2, -0.8, -0.5, -0.4]]), np.zeros(5))
+layer2 = Layer(np.array([[0.3], [0.2], [-0.5], [0.2], [-0.8]]), np.zeros(1))
+
+def learn(X, Y):
+     for i in range(250000):
+        res1 = layer1.forward(X)
+        res2 = sigmoid.forward(res1)
+        res3 = layer2.forward(res2)
+        res4 = sigmoid.forward(res3)
+        loss = calculate_log_loss(Y, res4)
+
+        print(f"Loss function is : {loss}")
+
+        grad1 = calculate_gradient(Y, res4)
+        grad2 = sigmoid.back(res3, grad1)
+        layer2.gradient_descent(layer2.calculate_gradient(res2, grad2), 0.002)
+        grad3 = layer2.back(grad2)
+        grad4 = sigmoid.back(res1, grad3)
+        layer1.gradient_descent(layer1.calculate_gradient(X, grad4), 0.002)
+
+learn(X, y)
+
+x_min, x_max = 0, 1
+y_min, y_max = 0, 1
+grid_size = 100 
+
+x = np.linspace(x_min, x_max, grid_size)
+y = np.linspace(y_min, y_max, grid_size)
+X, Y = np.meshgrid(x, y)
+xy_pairs = np.column_stack([X.ravel(), Y.ravel()])
+
+def f(x, y):
+    return sigmoid.forward(layer2.forward(sigmoid.forward(layer1.forward(np.array([[x, y]])))))
+
+Z = np.array([f(x, y) for x, y in xy_pairs])
 
 # print(sigmoid.forward(np.array([[0], [1]])))
