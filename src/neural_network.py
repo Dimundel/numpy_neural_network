@@ -2,12 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Linear:
-    def __init__ (self, weights, bias):
-        self.weights = weights
-        self.bias = bias
+    def __init__ (self, n_rows, n_columns):
+        self.weights = np.random.standard_normal(size=(n_rows, n_columns))
     
     def forward(self, input):
-        return np.matmul(input, self.weights) + self.bias
+        return np.matmul(input, self.weights)
     
     def calculate_gradient(self, input_value, forward_gradient):
         return np.matmul(input_value.transpose(), forward_gradient)
@@ -98,11 +97,11 @@ print("First 5 corresponding outputs (y):")
 print(y[:5])
 
 sigmoid = Sigmoid()
-layer1 = Linear(np.array([[-0.2, 0.1, -0.5, 0.2, 0.3], [0.6, -0.2, -0.8, -0.5, -0.4]]), np.zeros(5))
-layer2 = Linear(np.array([[0.3], [0.2], [-0.5], [0.2], [-0.8]]), np.zeros(1))
+layer1 = Linear(2, 30)
+layer2 = Linear(30, 1)
 
 nn = NeuralNetwork([layer1, sigmoid, layer2, sigmoid])
-nn.learn(X, y, 300000, 0.001)
+nn.learn(X, y, 250000, 0.0007)
 
 
 
