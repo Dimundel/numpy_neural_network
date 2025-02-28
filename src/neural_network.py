@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-class Layer:
+class Linear:
     def __init__ (self, weights, bias):
         self.weights = weights
         self.bias = bias
@@ -34,12 +34,52 @@ class Sigmoid:
 
     def back(self, input_value, forward_gradient):
         return self.forward(input_value) * (1 - self.forward(input_value)) * forward_gradient
+    
 
 def calculate_log_loss(y_true, y_prob):
     return -np.mean(y_true*np.log(y_prob)+(1-y_true)*np.log(1-y_prob))
 
 def calculate_gradient(y_true, y_prob):
     return (y_prob - y_true)/ (y_prob * (1 - y_prob))
+
+    
+class NeuralNetwork:
+    def __init__(self, layers):
+        self.layers = layers
+        self.intermediate_outputs = np.empty(len(layers), dtype=object)
+    
+    def forward_propagation(self, X, y_true):
+        self.intermediate_outputs[0] = self.layers[0].forward(X)
+        for i in range(1, len(self.layers)):
+            self.intermediate_outputs[i] = self.layers[i].forward(self.intermediate_outputs[i-1])
+        
+        y_prob = self.intermediate_outputs[-1]
+        
+        loss = calculate_log_loss(y_true, y_prob)
+        return y_prob, loss
+
+    def back_propagation(self, X, y_true, y_prob, learning_rate):
+        gradient = calculate_gradient(y_true, y_prob)
+        for i in range(len(self.layers) - 1, 0, -1):
+            if isinstance(self.layers[i], Linear):
+                self.layers[i].gradient_descent(self.layers[i].calculate_gradient(self.intermediate_outputs[i-1], gradient), learning_rate)
+                gradient = self.layers[i].back(gradient)
+            else:
+                gradient = self.layers[i].back(self.intermediate_outputs[i-1], gradient)
+        self.layers[0].gradient_descent(self.layers[0].calculate_gradient(X, gradient), learning_rate)
+    
+    def learn(self, X, y_true, num_of_iterations, learning_rate):
+        for _ in range(num_of_iterations):
+            y_prob, loss = self.forward_propagation(X, y_true)
+            print(f"Current loss is {loss}")
+            self.back_propagation(X, y_true, y_prob, learning_rate)
+    
+    def predict(self, X):
+        x = X
+        for layer in self.layers:
+            x = layer.forward(x)
+        return x
+
 
 def generate_xor_data(num_samples):
     X = np.random.rand(num_samples, 2)
@@ -58,27 +98,13 @@ print("First 5 corresponding outputs (y):")
 print(y[:5])
 
 sigmoid = Sigmoid()
-layer1 = Layer(np.array([[-0.2, 0.1, 0.5, 0.2, 0.3], [0.6, -0.2, -0.8, -0.5, -0.4]]), np.zeros(5))
-layer2 = Layer(np.array([[0.3], [0.2], [-0.5], [0.2], [-0.8]]), np.zeros(1))
+layer1 = Linear(np.array([[-0.2, 0.1, -0.5, 0.2, 0.3], [0.6, -0.2, -0.8, -0.5, -0.4]]), np.zeros(5))
+layer2 = Linear(np.array([[0.3], [0.2], [-0.5], [0.2], [-0.8]]), np.zeros(1))
 
-def learn(X, Y):
-     for i in range(250000):
-        res1 = layer1.forward(X)
-        res2 = sigmoid.forward(res1)
-        res3 = layer2.forward(res2)
-        res4 = sigmoid.forward(res3)
-        loss = calculate_log_loss(Y, res4)
+nn = NeuralNetwork([layer1, sigmoid, layer2, sigmoid])
+nn.learn(X, y, 300000, 0.001)
 
-        print(f"Loss function is : {loss}")
 
-        grad1 = calculate_gradient(Y, res4)
-        grad2 = sigmoid.back(res3, grad1)
-        layer2.gradient_descent(layer2.calculate_gradient(res2, grad2), 0.002)
-        grad3 = layer2.back(grad2)
-        grad4 = sigmoid.back(res1, grad3)
-        layer1.gradient_descent(layer1.calculate_gradient(X, grad4), 0.002)
-
-learn(X, y)
 
 x_min, x_max = 0, 1
 y_min, y_max = 0, 1
@@ -90,7 +116,8 @@ X, Y = np.meshgrid(x, y)
 xy_pairs = np.column_stack([X.ravel(), Y.ravel()])
 
 def f(x, y):
-    return sigmoid.forward(layer2.forward(sigmoid.forward(layer1.forward(np.array([[x, y]])))))
+    z = nn.predict(np.array([x, y]))
+    return z
 
 Z = np.array([f(x, y) for x, y in xy_pairs])
 
