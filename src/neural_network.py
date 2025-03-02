@@ -82,11 +82,8 @@ class NeuralNetwork:
 
 def generate_xor_data(num_samples):
     X = np.random.rand(num_samples, 2)
-
-    # XOR operation for output
     y = ((X[:, 0] >= 0.5) & (X[:, 1] <= 0.5)) | ((X[:, 0] <= 0.5) & (X[:, 1] >= 0.5)).astype(int)
     y = y.reshape(-1, 1)
-
     return X, y
 
 X, y = generate_xor_data(1000)
@@ -98,10 +95,11 @@ print(y[:5])
 
 sigmoid = Sigmoid()
 layer1 = Linear(2, 30)
-layer2 = Linear(30, 1)
+layer2 = Linear(30, 20)
+layer3 = Linear(20, 1)
 
-nn = NeuralNetwork([layer1, sigmoid, layer2, sigmoid])
-nn.learn(X, y, 250000, 0.0007)
+nn = NeuralNetwork([layer1, sigmoid, layer2, sigmoid, layer3, sigmoid])
+nn.learn(X, y, 10000, 0.0005)
 
 
 
@@ -122,8 +120,7 @@ Z = np.array([f(x, y) for x, y in xy_pairs])
 
 plt.figure(figsize=(6, 5))
 plt.scatter(xy_pairs[:, 0], xy_pairs[:, 1], c=Z, cmap="coolwarm", s=10)
-plt.colorbar(label="Function Value (Probability)")
+plt.colorbar(label="Probability")
 plt.xlabel("X-axis")
 plt.ylabel("Y-axis")
-plt.title("2D Function Visualization")
 plt.show()
